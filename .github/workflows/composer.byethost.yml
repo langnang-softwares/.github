@@ -1,0 +1,52 @@
+name: 🚀 Deploy composer directory on push with FTP
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "composer/**"
+
+jobs:
+  deploy_oneindex:
+    name: 🎉 Deploy oneindex to langnang.byethost32.com
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+
+      # - name: Use Node.js 14.x
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 14.x
+
+      # - name: Install && Build
+      #   run: |
+      #     cd nodejs/vue2-element-ui
+      #     yarn install
+      #     npm run build
+
+      - name: Install composer dependencies
+        run: |
+          cd composer/oneindex
+          composer install
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          # ftp server
+          server: ftpupload.net
+          # ftp username
+          username: b32_28202196
+          # ftp password
+          password: ${{ secrets.ftp_password }}
+          # local dir
+          local-dir: ./composer/oneindex/
+          # Path to upload to on the server. Must end with trailing slash /
+          server-dir: /htdocs/projects/composer/oneindex/
+          # File to Exclude
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github*/**
+            **/node_modules/**
